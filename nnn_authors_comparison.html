@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top NNN Authors vs Top Overall Contributors</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0f; color: #e0e0e0; padding: 32px 40px; }
+
+h1 { font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.subtitle { font-size: 13px; color: #6666aa; margin-bottom: 28px; }
+
+h2 { font-size: 15px; font-weight: 600; color: #8888cc; text-transform: uppercase; letter-spacing: 1px; margin: 32px 0 14px; }
+
+.dual-table { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 8px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 8px 10px; background: #1a1a2e; color: #8888cc; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #2a2a4a; }
+th.right, td.right { text-align: right; }
+th.center, td.center { text-align: center; }
+td { padding: 8px 10px; border-bottom: 1px solid #1a1a2e; vertical-align: middle; }
+tr:hover td { background: #12121f; }
+tr.overlap td { background: #161625; border-left: 2px solid #ffd93d; }
+
+.table-label { font-size: 13px; font-weight: 600; margin-bottom: 8px; padding: 6px 10px; border-radius: 4px; display: inline-block; }
+.table-label.nnn { background: #3d1515; color: #ff6b6b; }
+.table-label.overall { background: #15303d; color: #4ecdc4; }
+
+.badge { padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.badge.can-write { background: #153d15; color: #6bcb77; }
+.badge.lost { background: #3d1515; color: #ff6b6b; }
+.badge.at-risk { background: #3d3215; color: #ffd93d; }
+.badge.ai { background: #2a1a3d; color: #bb86fc; }
+.badge.new-user { background: #15303d; color: #4ecdc4; }
+
+.impact { font-weight: 700; font-size: 13px; }
+.impact.positive { color: #6bcb77; }
+.impact.negative { color: #ff6b6b; }
+.impact.low { color: #ffd93d; }
+
+.topics { font-size: 11px; color: #8888aa; line-height: 1.4; }
+
+.rate-table td { padding: 6px 10px; }
+.rate-bar-track { width: 100%; height: 14px; background: #1a1a2e; border-radius: 3px; overflow: hidden; }
+.rate-bar-fill { height: 100%; border-radius: 3px; }
+.rate-val { font-size: 12px; font-weight: 600; min-width: 45px; text-align: right; }
+
+.eo-dots { display: flex; gap: 2px; align-items: center; justify-content: center; }
+.eo-dot { width: 6px; height: 6px; border-radius: 50%; background: #ff6b6b; }
+.eo-none { color: #333; font-size: 11px; }
+
+.footnote { font-size: 12px; color: #555; margin-top: 6px; font-style: italic; }
+.section { margin-bottom: 40px; }
+.overlap-marker { color: #ffd93d; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<h1>Top NNN Authors vs Top Overall Contributors</h1>
+<p class="subtitle">Side-by-side comparison of the 10 most prolific "No Note Needed" writers and the 10 most prolific Community Notes contributors overall</p>
+
+<div class="section">
+<h2>Top 10 Contributors</h2>
+<div class="dual-table">
+  <div>
+    <div class="table-label nnn">Top 10 by NNN Notes Written</div>
+    <table id="nnnTable"></table>
+  </div>
+  <div>
+    <div class="table-label overall">Top 10 by Total Notes Written</div>
+    <table id="overallTable"></table>
+  </div>
+</div>
+<p class="footnote"><span class="overlap-marker">*</span> Same author appears in both lists (NNN #1 = Overall #3). This is the only overlap between the two top 10s.</p>
+</div>
+
+<div class="section">
+<h2>NNN Rate & Helpful Rate</h2>
+<div class="dual-table">
+  <div>
+    <div class="table-label nnn">Top NNN Authors</div>
+    <table class="rate-table" id="nnnRates"></table>
+  </div>
+  <div>
+    <div class="table-label overall">Top Overall Contributors</div>
+    <table class="rate-table" id="overallRates"></table>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2>Writing Rights & Impact</h2>
+<div class="dual-table">
+  <div>
+    <div class="table-label nnn">Top NNN Authors</div>
+    <table id="nnnImpact"></table>
+  </div>
+  <div>
+    <div class="table-label overall">Top Overall Contributors</div>
+    <table id="overallImpact"></table>
+  </div>
+</div>
+<p class="footnote">Writing Impact = helpful notes − not helpful notes. Earn-outs = number of times writing ability was revoked. Red dots = one earn-out each.</p>
+</div>
+
+<script>
+const nnnData = [{"total_notes": 5865, "nnn_notes": 2856, "misleading_notes": 3007, "nnn_pct": 48.7, "helpful_notes": 51, "helpful_pct": 0.9, "not_helpful_notes": 60, "not_helpful_pct": 1.0, "writing_impact": -9, "enrollment_state": "newUser", "has_writing": false, "lost_writing": false, "earn_outs": 0, "modeling_group": 0, "is_ai": false, "top_topics": "Israel/Palestine (514), Immigration (386), Crime/guns (356)", "rank": 1, "label": "NNN #1*", "also_overall": true}, {"total_notes": 2094, "nnn_notes": 1014, "misleading_notes": 1080, "nnn_pct": 48.4, "helpful_notes": 44, "helpful_pct": 2.1, "not_helpful_notes": 17, "not_helpful_pct": 0.8, "writing_impact": 27, "enrollment_state": "earnedOutAcknowledged", "has_writing": false, "lost_writing": true, "earn_outs": 0, "modeling_group": 13, "is_ai": false, "top_topics": "Elon/X/Tesla (333), COVID/vaccine (195), Crime/guns (173)", "rank": 2, "label": "NNN #2", "also_overall": false}, {"total_notes": 1563, "nnn_notes": 415, "misleading_notes": 1148, "nnn_pct": 26.6, "helpful_notes": 255, "helpful_pct": 16.3, "not_helpful_notes": 19, "not_helpful_pct": 1.2, "writing_impact": 236, "enrollment_state": "atRisk", "has_writing": true, "lost_writing": false, "earn_outs": 3, "modeling_group": 13, "is_ai": false, "top_topics": "Elon/X/Tesla (615), Election (112), Immigration (82)", "rank": 3, "label": "NNN #3", "also_overall": false}, {"total_notes": 681, "nnn_notes": 388, "misleading_notes": 293, "nnn_pct": 57.0, "helpful_notes": 39, "helpful_pct": 5.7, "not_helpful_notes": 4, "not_helpful_pct": 0.6, "writing_impact": 35, "enrollment_state": "atRisk", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 14, "is_ai": false, "top_topics": "Elon/X/Tesla (100), Election (31), Crime/guns (24)", "rank": 4, "label": "NNN #4", "also_overall": false}, {"total_notes": 1200, "nnn_notes": 371, "misleading_notes": 829, "nnn_pct": 30.9, "helpful_notes": 322, "helpful_pct": 26.8, "not_helpful_notes": 9, "not_helpful_pct": 0.8, "writing_impact": 313, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 1, "modeling_group": 14, "is_ai": false, "top_topics": "Elon/X/Tesla (470), Election (105), Crime/guns (57)", "rank": 5, "label": "NNN #5", "also_overall": false}, {"total_notes": 1184, "nnn_notes": 365, "misleading_notes": 819, "nnn_pct": 30.8, "helpful_notes": 290, "helpful_pct": 24.5, "not_helpful_notes": 12, "not_helpful_pct": 1.0, "writing_impact": 278, "enrollment_state": "atRisk", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 25, "is_ai": false, "top_topics": "Elon/X/Tesla (538), Israel/Palestine (53), AI/tech (38)", "rank": 6, "label": "NNN #6", "also_overall": false}, {"total_notes": 656, "nnn_notes": 338, "misleading_notes": 318, "nnn_pct": 51.5, "helpful_notes": 72, "helpful_pct": 11.0, "not_helpful_notes": 4, "not_helpful_pct": 0.6, "writing_impact": 68, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 13, "is_ai": false, "top_topics": "Elon/X/Tesla (85), Ukraine/Russia (58), Crime/guns (52)", "rank": 7, "label": "NNN #7", "also_overall": false}, {"total_notes": 2316, "nnn_notes": 337, "misleading_notes": 1979, "nnn_pct": 14.6, "helpful_notes": 210, "helpful_pct": 9.1, "not_helpful_notes": 23, "not_helpful_pct": 1.0, "writing_impact": 187, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 2, "modeling_group": 6, "is_ai": false, "top_topics": "Ukraine/Russia (491), Israel/Palestine (225), Crime/guns (138)", "rank": 8, "label": "NNN #8", "also_overall": false}, {"total_notes": 1600, "nnn_notes": 328, "misleading_notes": 1272, "nnn_pct": 20.5, "helpful_notes": 420, "helpful_pct": 26.2, "not_helpful_notes": 8, "not_helpful_pct": 0.5, "writing_impact": 412, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 1, "is_ai": false, "top_topics": "Israel/Palestine (419), Elon/X/Tesla (130), Crime/guns (74)", "rank": 9, "label": "NNN #9", "also_overall": false}, {"total_notes": 468, "nnn_notes": 324, "misleading_notes": 144, "nnn_pct": 69.2, "helpful_notes": 51, "helpful_pct": 10.9, "not_helpful_notes": 2, "not_helpful_pct": 0.4, "writing_impact": 49, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 18, "is_ai": false, "top_topics": "Election (60), Crime/guns (39), COVID/vaccine (30)", "rank": 10, "label": "NNN #10", "also_overall": false}];
+const ovData = [{"total_notes": 55145, "nnn_notes": 0, "misleading_notes": 55145, "nnn_pct": 0.0, "helpful_notes": 1448, "helpful_pct": 2.6, "not_helpful_notes": 0, "not_helpful_pct": 0.0, "writing_impact": 1448, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 10, "is_ai": false, "top_topics": "Elon/X/Tesla (149), Election (136), Israel/Palestine (6)", "rank": 1, "label": "Overall #1", "also_nnn": false}, {"total_notes": 8899, "nnn_notes": 6, "misleading_notes": 8893, "nnn_pct": 0.1, "helpful_notes": 494, "helpful_pct": 5.6, "not_helpful_notes": 2, "not_helpful_pct": 0.0, "writing_impact": 492, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 12, "modeling_group": 13, "is_ai": false, "top_topics": "COVID/vaccine (4708), Election (615), Elon/X/Tesla (455)", "rank": 2, "label": "Overall #2", "also_nnn": false}, {"total_notes": 5865, "nnn_notes": 2856, "misleading_notes": 3007, "nnn_pct": 48.7, "helpful_notes": 51, "helpful_pct": 0.9, "not_helpful_notes": 60, "not_helpful_pct": 1.0, "writing_impact": -9, "enrollment_state": "newUser", "has_writing": false, "lost_writing": false, "earn_outs": 0, "modeling_group": 0, "is_ai": false, "top_topics": "Israel/Palestine (514), Immigration (386), Crime/guns (356)", "rank": 3, "label": "Overall #3*", "also_nnn": true}, {"total_notes": 5384, "nnn_notes": 98, "misleading_notes": 5286, "nnn_pct": 1.8, "helpful_notes": 1319, "helpful_pct": 24.5, "not_helpful_notes": 19, "not_helpful_pct": 0.4, "writing_impact": 1300, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 19, "is_ai": false, "top_topics": "Israel/Palestine (706), Elon/X/Tesla (472), Crime/guns (222)", "rank": 4, "label": "Overall #4", "also_nnn": false}, {"total_notes": 5328, "nnn_notes": 240, "misleading_notes": 5088, "nnn_pct": 4.5, "helpful_notes": 298, "helpful_pct": 5.6, "not_helpful_notes": 42, "not_helpful_pct": 0.8, "writing_impact": 256, "enrollment_state": "earnedOutAcknowledged", "has_writing": false, "lost_writing": true, "earn_outs": 8, "modeling_group": 21, "is_ai": false, "top_topics": "Elon/X/Tesla (3938), Crime/guns (153), COVID/vaccine (19)", "rank": 5, "label": "Overall #5", "also_nnn": false}, {"total_notes": 5319, "nnn_notes": 0, "misleading_notes": 5319, "nnn_pct": 0.0, "helpful_notes": 885, "helpful_pct": 16.6, "not_helpful_notes": 4, "not_helpful_pct": 0.1, "writing_impact": 881, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 1, "modeling_group": 18, "is_ai": false, "top_topics": "Elon/X/Tesla (742), Crime/guns (506), Israel/Palestine (336)", "rank": 6, "label": "Overall #6", "also_nnn": false}, {"total_notes": 5081, "nnn_notes": 0, "misleading_notes": 5081, "nnn_pct": 0.0, "helpful_notes": 1228, "helpful_pct": 24.2, "not_helpful_notes": 87, "not_helpful_pct": 1.7, "writing_impact": 1141, "enrollment_state": "apiEarnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 13, "is_ai": true, "top_topics": "Crime/guns (364), AI/tech (290), Israel/Palestine (247)", "rank": 7, "label": "Overall #7", "also_nnn": false}, {"total_notes": 4912, "nnn_notes": 17, "misleading_notes": 4895, "nnn_pct": 0.3, "helpful_notes": 319, "helpful_pct": 6.5, "not_helpful_notes": 9, "not_helpful_pct": 0.2, "writing_impact": 310, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 1, "modeling_group": 21, "is_ai": false, "top_topics": "COVID/vaccine (2685), Elon/X/Tesla (341), Trans/gender (11)", "rank": 8, "label": "Overall #8", "also_nnn": false}, {"total_notes": 4760, "nnn_notes": 220, "misleading_notes": 4540, "nnn_pct": 4.6, "helpful_notes": 908, "helpful_pct": 19.1, "not_helpful_notes": 42, "not_helpful_pct": 0.9, "writing_impact": 866, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 6, "modeling_group": 19, "is_ai": false, "top_topics": "COVID/vaccine (444), Israel/Palestine (413), Elon/X/Tesla (394)", "rank": 9, "label": "Overall #9", "also_nnn": false}, {"total_notes": 4518, "nnn_notes": 10, "misleading_notes": 4508, "nnn_pct": 0.2, "helpful_notes": 1467, "helpful_pct": 32.5, "not_helpful_notes": 2, "not_helpful_pct": 0.0, "writing_impact": 1465, "enrollment_state": "earnedIn", "has_writing": true, "lost_writing": false, "earn_outs": 0, "modeling_group": 13, "is_ai": false, "top_topics": "COVID/vaccine (1292), Elon/X/Tesla (386), Crime/guns (306)", "rank": 10, "label": "Overall #10", "also_nnn": false}];
+
+function statusBadge(p) {
+  if (p.is_ai) return '<span class="badge ai">AI</span>';
+  if (p.enrollment_state === 'earnedIn') return '<span class="badge can-write">Can Write</span>';
+  if (p.enrollment_state === 'atRisk') return '<span class="badge at-risk">At Risk</span>';
+  if (p.enrollment_state === 'earnedOutAcknowledged') return '<span class="badge lost">Lost Writing</span>';
+  if (p.enrollment_state === 'removed') return '<span class="badge lost">Removed</span>';
+  if (p.enrollment_state === 'newUser') return '<span class="badge new-user">New User</span>';
+  if (p.enrollment_state === 'apiEarnedIn') return '<span class="badge ai">AI</span>';
+  return '<span class="badge">' + p.enrollment_state + '</span>';
+}
+
+function impactSpan(val) {
+  const sign = val >= 0 ? '+' : '';
+  const cls = val < 0 ? 'negative' : val < 100 ? 'low' : 'positive';
+  return `<span class="impact ${cls}">${sign}${val.toLocaleString()}</span>`;
+}
+
+function earnOutDots(n) {
+  if (n === 0) return '<span class="eo-none">0</span>';
+  const dots = Array(Math.min(n, 12)).fill('<span class="eo-dot"></span>').join('');
+  const extra = n > 12 ? `<span style="font-size:10px;color:#ff6b6b"> +${n-12}</span>` : '';
+  return `<div class="eo-dots">${dots}${extra}</div>`;
+}
+
+function isOverlap(p) {
+  return p.also_overall || p.also_nnn;
+}
+
+function labelHtml(p) {
+  const star = (p.also_overall || p.also_nnn) ? '<span class="overlap-marker">*</span>' : '';
+  return `${p.label.replace('*','')}${star}`;
+}
+
+function buildMainTable(data, tableId) {
+  const t = document.getElementById(tableId);
+  let html = `<tr>
+    <th style="width:80px">Author</th>
+    <th class="right">Total</th>
+    <th class="right">NNN</th>
+    <th class="right">Helpful</th>
+    <th>Top Topics</th>
+    <th class="center">Status</th>
+  </tr>`;
+  
+  data.forEach(p => {
+    const rowClass = isOverlap(p) ? ' class="overlap"' : '';
+    html += `<tr${rowClass}>
+      <td style="font-weight:600;color:#aaa">${labelHtml(p)}</td>
+      <td class="right">${p.total_notes.toLocaleString()}</td>
+      <td class="right" style="color:#ff6b6b;font-weight:600">${p.nnn_notes.toLocaleString()}</td>
+      <td class="right" style="color:#6bcb77">${p.helpful_notes.toLocaleString()}</td>
+      <td><div class="topics">${p.top_topics}</div></td>
+      <td class="center">${statusBadge(p)}</td>
+    </tr>`;
+  });
+  t.innerHTML = html;
+}
+
+function buildRateTable(data, tableId) {
+  const t = document.getElementById(tableId);
+  let html = `<tr>
+    <th style="width:70px">Author</th>
+    <th>NNN Rate</th>
+    <th class="right" style="width:45px"></th>
+    <th>Helpful Rate</th>
+    <th class="right" style="width:45px"></th>
+  </tr>`;
+  
+  data.forEach(p => {
+    const nnnW = Math.min(100, p.nnn_pct * 1.4);
+    const helpW = Math.min(100, p.helpful_pct * 2.8);
+    const rowClass = isOverlap(p) ? ' class="overlap"' : '';
+    html += `<tr${rowClass}>
+      <td style="font-weight:600;color:#aaa">${labelHtml(p)}</td>
+      <td><div class="rate-bar-track"><div class="rate-bar-fill" style="width:${nnnW}%;background:#ff6b6b"></div></div></td>
+      <td class="right rate-val" style="color:#ff6b6b">${p.nnn_pct}%</td>
+      <td><div class="rate-bar-track"><div class="rate-bar-fill" style="width:${helpW}%;background:#6bcb77"></div></div></td>
+      <td class="right rate-val" style="color:#6bcb77">${p.helpful_pct}%</td>
+    </tr>`;
+  });
+  t.innerHTML = html;
+}
+
+function buildImpactTable(data, tableId) {
+  const t = document.getElementById(tableId);
+  let html = `<tr>
+    <th style="width:70px">Author</th>
+    <th class="center">Impact</th>
+    <th class="center">Status</th>
+    <th class="center">Earn-outs</th>
+    <th class="center">Group</th>
+  </tr>`;
+  
+  data.forEach(p => {
+    const rowClass = isOverlap(p) ? ' class="overlap"' : '';
+    html += `<tr${rowClass}>
+      <td style="font-weight:600;color:#aaa">${labelHtml(p)}</td>
+      <td class="center">${impactSpan(p.writing_impact)}</td>
+      <td class="center">${statusBadge(p)}</td>
+      <td class="center">${earnOutDots(p.earn_outs)}</td>
+      <td class="center" style="color:#666;font-size:12px">${p.modeling_group}</td>
+    </tr>`;
+  });
+  t.innerHTML = html;
+}
+
+buildMainTable(nnnData, 'nnnTable');
+buildMainTable(ovData, 'overallTable');
+buildRateTable(nnnData, 'nnnRates');
+buildRateTable(ovData, 'overallRates');
+buildImpactTable(nnnData, 'nnnImpact');
+buildImpactTable(ovData, 'overallImpact');
+</script>
+</body>
+</html>
