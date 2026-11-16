@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chatbots and fact checks: the answers</title>
+<meta name="description" content="Every answer from an experiment asking Claude and ChatGPT about 70 claims, with and without access to fact-checking sites.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Chatbots and fact checks: the answers</h1>
+    <p class="lede">How Claude and ChatGPT answered 40 fact-checked claims, with fact-checking sites available and with them blocked.</p>
+    <details class="about">
+      <summary>How the experiment worked</summary>
+      <div class="about-body">
+        <p><b>Claims.</b> 40 claims fact-checked between 19 and 22 October 2026 by members of the International Fact-Checking Network or the European Fact-Checking Standards Network. Each was asked in its original language: “Is this true? [claim]”, followed by “How do you know?”. The full study also covered Community Notes posts and control questions, not shown here.</p>
+        <p><b>Arms.</b> <i>Open web</i>: the model's API with web search, nothing blocked. <i>Fact-checkers blocked</i>: the same, with up to 100 fact-checking domains blocked for that claim. <i>Consumer app</i>: the ChatGPT or Claude web app with default settings. Asked between 22 and 26 October 2026.</p>
+        <p><b>Wave 2.</b> On 12 November 2026 the 12 image and video claims were asked again through the APIs with a frame from the original post attached: open web, fact-checkers blocked, and a third arm that also blocked sites that had republished the fact checks.</p>
+        <p><b>Coding.</b> For fact-checked claims, two blind AI coders compared each answer with the full fact check: its verdict, whether its reasoning matched the fact check's key findings, whether it credited a fact-checker, and whether a fact check was its main source. The author reviewed the codes. Links are classed against the roster of fact-checking sites.</p>
+        <p><b>Reading the page.</b> <span class="chip c-ok">False</span> the verdict matches the fact check; <span class="chip c-mx">Mixed</span> or <span class="chip c-bad">True</span> it does not; <span class="chip c-ct">Can't tell</span> no verdict. In the claim list, the four squares show open web then blocked, for Claude and ChatGPT.</p>
+        <p class="small">Models: Claude (claude-opus-5-5) and ChatGPT (gpt-5.5). Answers are shown as recorded. Fact checks are linked, not reproduced.</p>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main class="wrap layout">
+  <aside class="side">
+    <div class="filters">
+      <input id="q" type="search" placeholder="Search claims" aria-label="Search claims">
+      <div class="row">
+        <select id="f-show" aria-label="Show"><option value="">All claims</option><option value="fact">Text claims</option><option value="media">Image or video</option><option value="changed">Changed when blocked</option></select>
+        <select id="f-lang" aria-label="Language"><option value="">All languages</option></select>
+      </div>
+    </div>
+    <div class="count" id="count"></div>
+    <ul class="claims" id="claims"></ul>
+  </aside>
+
+  <section class="main" id="main" aria-live="polite"></section>
+</main>
+
+<footer class="wrap foot">
+  <p>Part of “Demand for digital fact-checking in the age of AI”, a UNESCO fellowship report by Alexios Mantzarlis. Data: <a href="data/data.json">data.json</a>.</p>
+</footer>
+
+<script src="js/marked.min.js"></script>
+<script src="js/purify.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
